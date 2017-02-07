@@ -1,6 +1,7 @@
 package com.example.tapos.instragramandroidapplication;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SignUpCallback;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnKeyListener {
 
     private EditText usernameTxt;
@@ -22,11 +28,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView changeTextView;
     private boolean isSignUpStage = true;
 
+    public void changeActivity(){
+        Intent intent=new Intent(this,UserlistActivity.class);
+        startActivity(intent);
+        finish();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setTitle("Instragram Apps");
+
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            changeActivity();
+
+        }
         usernameTxt = (EditText) findViewById(R.id.usernameEditText);
         passwordTxt = (EditText) findViewById(R.id.passwordEditText);
         submitLoginButton = (Button) findViewById(R.id.signUpLoginButton);
@@ -50,12 +67,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (view.getId() == R.id.signUpLoginButton) {
 
-            if(usernameTxt.getText().toString().isEmpty() || passwordTxt.getText().toString().isEmpty()){
-                Toast.makeText(this,"please complete all the field",Toast.LENGTH_LONG).show();
-            }else{
+            if (usernameTxt.getText().toString().isEmpty() || passwordTxt.getText().toString().isEmpty()) {
+                Toast.makeText(this, "please complete all the field", Toast.LENGTH_LONG).show();
+            } else {
 
+                if (this.isSignUpStage) {
+                    ParseUser user = new ParseUser();
+                    user.setUsername(this.usernameTxt.getText().toString());
+                    user.setPassword(this.passwordTxt.getText().toString());
+                    user.signUpInBackground(new SignUpCallback() {
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                Toast.makeText(MainActivity.this, "signu successfully", Toast.LENGTH_LONG).show();
+                                changeActivity();
+                            } else {
+                                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                } else {
 
-
+                    ParseUser.logInInBackground(this.usernameTxt.getText().toString(),
+                            this.passwordTxt.getText().toString(), new LogInCallback() {
+                                public void done(ParseUser user, ParseException e) {
+                                    if (user != null && e == null) {
+                                        Toast.makeText(MainActivity.this, "login successfully", Toast.LENGTH_LONG).show();
+                                        changeActivity();
+                                    } else {
+                                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+                }
 
 
             }
@@ -82,8 +125,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onKey(View view, int i, KeyEvent keyEvent) {
 
-        if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && i==keyEvent.KEYCODE_ENTER)
-        {
+        if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && i == keyEvent.KEYCODE_ENTER) {
             onClick(submitLoginButton);
         }
         return false;
