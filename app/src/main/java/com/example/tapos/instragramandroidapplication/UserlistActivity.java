@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -38,6 +40,7 @@ public class UserlistActivity extends AppCompatActivity {
 
     ListView userListView;
     ArrayList<String> users = new ArrayList<>();
+    ArrayAdapter adapter;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.userlistmenu, menu);//Menu Resource, Menu
@@ -172,11 +175,24 @@ public class UserlistActivity extends AppCompatActivity {
                          objects) {
                         users.add(user.getUsername());
                     }
-                    ArrayAdapter adapter = new ArrayAdapter(UserlistActivity.this, android.R.layout.simple_list_item_1, users);
+                    adapter = new ArrayAdapter(UserlistActivity.this, android.R.layout.simple_list_item_1, users);
                     userListView.setAdapter(adapter);
                 } else {
                     // Something went wrong.
                 }
+            }
+        });
+
+        userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String userName = users.get(i);
+                Intent detailIntent = new Intent(UserlistActivity.this, FeedActivity.class);
+
+                detailIntent.putExtra("title", userName);
+
+                startActivity(detailIntent);
+
             }
         });
     }

@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:name=".ParseApplication"
         android:allowBackup="true"
@@ -21,7 +22,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".UserlistActivity" />
-        <activity android:name=".ImageActivity"></activity>
+        <activity android:name=".ImageActivity" />
+        <activity android:name=".FeedActivity"></activity>
     </application>
 
 </manifest>
